@@ -18,17 +18,17 @@ e,e,e,r,r,e,e,e
 sense.set_pixels(image)
 
 while True:
-    x = sense.get_accelerometer_raw().['x']
-    y = sense.get_accelerometer_raw().['y']
+    x = sense.get_accelerometer_raw()['x']
+    y = sense.get_accelerometer_raw()['y']
 
     x = round(x, 0)
     y = round(y, 0)
 
     if x == -1:
-        sense.set_rotation(180)
-    elif y == 1:
         sense.set_rotation(90)
-    elif y == -1:
-        sense.set_rotation(270)
-    else:
+    elif y == 1:
         sense.set_rotation(0)
+    elif y == -1:
+        sense.set_rotation(180)
+    else:
+        sense.set_rotation(270)
