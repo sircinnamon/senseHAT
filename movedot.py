@@ -6,14 +6,14 @@ sense = SenseHat()
 r = [255,0,0]
 e = [0,0,0]
 image = [
-e,e,e,r,r,e,e,e,
-e,e,e,r,r,e,e,e,
-e,e,e,r,r,e,e,e,
-e,e,e,r,r,e,e,e,
-e,e,e,r,r,e,e,e,
 e,e,e,e,e,e,e,e,
-e,e,e,r,r,e,e,e,
-e,e,e,r,r,e,e,e
+e,r,r,e,e,r,r,e,
+e,r,r,e,e,r,r,e,
+e,e,e,e,e,e,e,e,
+e,e,e,r,r,r,e,e,
+e,e,r,e,e,e,r,e,
+e,r,e,e,e,e,e,r,
+e,e,e,e,e,e,e,e
 ]
 #Program for moving a dot around the grid using a joystick
 
@@ -36,8 +36,11 @@ sense.set_pixels(create_image(5,5))
 x = 5
 y = 5
 while running:
-	event = sense.stick.wait_for_event()
-	if(event.direction == "up"):
+	event = sense.stick.wait_for_event(emptybuffer=True)
+	if(event.action == "released"):
+		#do nothing
+		x=x
+	elif(event.direction == "up"):
 		x, y = move(-1,0,x,y)
 	elif(event.direction == "down"):
 		x, y = move(1,0,x,y)
@@ -52,3 +55,5 @@ while running:
 		sense.set_pixels(create_image(x,y))
 	time.sleep(0.1)
 sense.show_message("Game Over")
+sense.set_pixels(image)
+
