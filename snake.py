@@ -38,14 +38,14 @@ def place_food(snake):
 	i = 0; #records how many blank squares have been traversed
 	j = 0;  #records how many squares have been traversed
 	while(i != place):
-		if(snake.count(index_to_tuple(i)) == 0):
+		if(snake.count(index_to_tuple(j)) == 0):
 			i += 1
 		j += 1
 	return index_to_tuple(j-1)
 
 def create_screen(snake, food):
 	new_image = [e] * 64
-	for coord in enumerate(snake):
+	for index,coord in enumerate(snake):
 		new_image[tuple_to_index(coord)] = g
 	new_image[tuple_to_index(food)] = w
 	return new_image
@@ -59,14 +59,14 @@ def game_over(snake, food, score):
 		sense.clear()
 		time.sleep(0.2)
 		i += 1
-	sense.show_message("SCORE: "+score)
+	sense.show_message("SCORE: "+ str(score))
 	sys.exit()
 
-def tuple_to_index(tuple):
-	return tuple[0]+(8*tuple[1])
+def tuple_to_index(tup):
+	return tup[0]+(tup[1]*8)
 
 def index_to_tuple(index):
-	return ((index%8), (index-(index%8)))
+	return ((index%8), (index-(index%8))/8)
 
 running = True
 snake = deque([(4,4)]) #Head of snake starts here
@@ -76,15 +76,17 @@ sense.set_pixels(create_screen(snake, food))
 head = snake[0]
 current_direction = (0,0)
 while running:
-	event = sense.stick.get_events()[0];
-	if(event.direction == "up"):
-		current_direction = (-1,0)
-	elif(event.direction == "down"):
-		current_direction = (1,0)
-	elif(event.direction == "left"):
-		current_direction = (0,-1)
-	elif(event.direction == "right"):
-		current_direction = (0,1)
+	events = sense.stick.get_events()
+	if len(events) > 0:
+		event = events[0];
+		if(event.direction == "up"):
+			current_direction = (0,-1)
+		elif(event.direction == "down"):
+			current_direction = (0,1)
+		elif(event.direction == "left"):
+			current_direction = (-1,0)
+		elif(event.direction == "right"):
+			current_direction = (1,0)
 
 	head = (head[0]+current_direction[0], head[1]+current_direction[1])
 	
@@ -92,12 +94,12 @@ while running:
 		#hit walls
 		game_over(snake, food, score)
 		running = False
-	elif(snake.appendleft(head).count(head)>1):
+	elif(snake.count(head)>0 and current_direction != (0,0)):
 		#hit self
 		game_over(snake, food, score)
 		running = False
 
-	snake = snake.appendleft(head)
+	snake.appendleft(head)
 	if(food == head):
 		score += 1
 		food = place_food(snake)
@@ -105,7 +107,7 @@ while running:
 		snake.pop() 
 	if(running):
 		sense.set_pixels(create_screen(snake, food))
-		time.sleep(0.1)
+		time.sleep(0.5)
 
 game_over(snake,food,score)
 
