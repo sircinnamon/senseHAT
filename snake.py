@@ -20,7 +20,7 @@ e,e,r,e,e,e,r,e,
 e,r,e,e,e,e,e,r,
 e,e,e,e,e,e,e,e
 ]
-#Program for moving a dot around the grid using a joystick
+#Program for playing the game "Snake"
 
 def move(vertical, horizontal, snake):
 	x = x+horizontal
