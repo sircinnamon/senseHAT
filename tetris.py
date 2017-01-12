@@ -25,7 +25,7 @@ piece_3 = [(0,0),(1,0),(0,-1),(0,-2)] #L
 piece_4 = [(0,0),(-1,0),(0,-1),(0,-2)] #reverse L
 piece_5 = [(0,0),(-1,0),(0,-1),(1,-1)] #reverse Z
 piece_6 = [(0,0),(1,0),(0,-1),(-1,-1)] #Z
-piece_7 = [(0,0),(1,0),(0,-1),(-1,-1)] #T
+piece_7 = [(0,0),(1,0),(0,-1),(-1,0)] #T
 
 all_pieces = [(piece_1,teal),(piece_2,yellow),(piece_3,orange),(piece_4,dark_blue),(piece_5,dark_green),(piece_6,dark_red),(piece_7,purple)]
 #Program for playing the game "Tetris"
@@ -49,12 +49,13 @@ def rotate_tile(origin, tile):
 	return tile_coordinates 
 
 def shuffle_pieces():
-	remaining_pieces = all_pieces
+	remaining_pieces = list(all_pieces)
 	shuffled = []
 	while(len(remaining_pieces) > 1):
+		print(str(len(remaining_pieces)))
 		rand = randint(0,len(remaining_pieces)-1)
 		shuffled.append(remaining_pieces.pop(rand))
-	shuffled.append(remaining_pieces.pop())
+	shuffled.extend(remaining_pieces)
 	return shuffled
 
 def place_piece(template, point):
@@ -69,7 +70,7 @@ def place_piece(template, point):
 def create_screen(active_piece,piece_colour,game_map):
 	screen = list(game_map)
 	for coord in active_piece:
-		if(tuple_to_index(coord) > 0 and tuple_to_index(coord) < 63):
+		if(tuple_to_index(coord) > 0 and tuple_to_index(coord) < 64):
 			screen[tuple_to_index(coord)] = piece_colour
 	return screen
 
@@ -104,7 +105,7 @@ def check_collision(game_map, piece):
 
 def add_piece_to_map(piece, game_map, colour):
 	for coord in piece:
-		if(tuple_to_index(coord) > 0 and tuple_to_index(coord) < 63):
+		if(tuple_to_index(coord) > 0 and tuple_to_index(coord) < 64):
 			game_map[tuple_to_index(coord)] = colour
 	return game_map
 
@@ -113,6 +114,30 @@ def above_top(piece):
 		if(coord[1] < 0):
 			return True
 	return False
+
+def crosses_edge(piece):
+	left_side=False
+	right_side=False
+	for coord in piece:
+		if(coord[0] > 7 or coord[0] < 0):
+			return True
+	return False
+
+def move(move_type, piece, game_map):
+	#only perform if legal
+	new_piece = []
+	for tile in piece:
+		new_piece.append((tile[0]+move_type[0],tile[1]+move_type[1]))
+	i = move_type[2]
+	while(i > 0):
+		new_piece = rotate_piece(piece)
+		i = i-1
+
+	if(crosses_edge(new_piece)):
+		return piece
+	elif(check_collision(game_map,new_piece)):
+		return piece
+	return new_piece
 
 
 running = True
@@ -134,6 +159,7 @@ current_piece = place_piece(current_piece[0],spawn)
 score = 0
 sense.set_pixels(create_screen(current_piece, current_piece_colour, game_map))
 locked_in = False
+input_move = (0,0,0)
 
 while running:
 	#get input
@@ -143,15 +169,25 @@ while running:
 		if(event.direction == "up"):
 			#rotate?
 			print("up move")
+			input_move = (0,0,1)
 		elif(event.direction == "down"):
 			#double drop?
 			print("down move")
+			#input_move = (0,1,0)
 		elif(event.direction == "left"):
 			#move left
 			print("left move")
+			input_move = (-1,0,0)
 		elif(event.direction == "right"):
 			#move right
 			print("right move")
+			input_move = (1,0,0)
+
+	#perform input if needed and legal
+	if(not locked_in):
+		current_piece = move(input_move, current_piece, game_map)
+	input_move = (0,0,0)
+	
 	#lower piece & check for piece "lock in"
 	lowered_piece = lower_piece(current_piece)
 	if check_collision(game_map, lowered_piece):
@@ -166,7 +202,6 @@ while running:
 		game_over(game_map,score)
 
 	#check for lines to remove
-	#perform input if needed
 	#generate new piece if needed
 	if(locked_in):
 		locked_in = False
