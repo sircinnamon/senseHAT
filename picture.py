@@ -1,6 +1,8 @@
 from PIL import Image
 import sys
 import imageResize
+from sense_hat import SenseHat
+sense = SenseHat()
 
 #Attempt to display a given image on senseHAT
 img = Image.open(sys.argv[1])
