@@ -2,12 +2,12 @@ import sys
 import twitter
 import time
 from sense_hat import SenseHat
-from keyGrabber import grab_key
+from keyGrabber import get_key
 sense = SenseHat()
-consumer_key = grab_key("twitter_consumer_key")
-consumer_secret = grab_key("twitter_consumer_secret")
-access_token_key = grab_key("twitter_access_token_key")
-access_token_secret = grab_key("twitter_access_token_secret")
+consumer_key = get_key("twitter_consumer_key")
+consumer_secret = get_key("twitter_consumer_secret")
+access_token_key = get_key("twitter_access_token_key")
+access_token_secret = get_key("twitter_access_token_secret")
 api = twitter.Api(consumer_key=consumer_key,
 				consumer_secret=consumer_secret,
 				access_token_key=access_token_key,

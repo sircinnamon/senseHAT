@@ -6,5 +6,6 @@ def get_key(key_name):
 		keylist = f.readlines()
 	for x in keylist:
 		if(x.split(":"))[0] == key_name:
-			return x.split(":")[1].strip()s
+			return x.split(":")[1].strip()
+	print(str("Key "+key_name+" not found."))
 	return None
